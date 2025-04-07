@@ -1,28 +1,27 @@
-# Use the official PHP image from Docker Hub
-FROM php:8.1-apache
+FROM php:8.1-fpm
 
-# Enable mod_rewrite (useful for routing in PHP apps)
-RUN a2enmod rewrite
+# Install system dependencies and PHP extensions
+RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev libzip-dev git unzip && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install gd zip pdo pdo_mysql
 
-# Install dependencies (e.g., Composer)
-RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd
+# Set working directory
+WORKDIR /var/www
 
-# Install Composer (dependency manager)
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Set the working directory in the container
-WORKDIR /var/www/html
-
-# Copy your PHP app files into the container
+# Copy your project files
 COPY . .
 
-# Install PHP dependencies via Composer (if applicable)
-RUN composer install
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Expose the port the app will run on
-EXPOSE 80
+# Install PHP dependencies
+RUN composer install --no-interaction --prefer-dist
 
-# Start Apache server
-CMD ["apache2-foreground"]
+# Set appropriate permissions
+RUN chown -R www-data:www-data /var/www
+
+# Expose the port your app is running on
+EXPOSE 9000
+
+# Start the PHP-FPM server
+CMD ["php-fpm"]
