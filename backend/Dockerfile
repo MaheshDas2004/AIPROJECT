@@ -1,26 +1,30 @@
-# Use official PHP image with Apache
+# Use PHP with Apache and Composer preinstalled
 FROM php:8.2-apache
 
-# Enable mod_rewrite
+# Install dependencies for Composer and cURL
+RUN apt-get update && apt-get install -y \
+    unzip \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    curl \
+    git \
+    zip \
+    && docker-php-ext-install curl
+
+# Enable Apache mod_rewrite (optional but useful)
 RUN a2enmod rewrite
 
-# Install curl and unzip for Composer
-RUN apt-get update && apt-get install -y curl unzip libzip-dev zip && docker-php-ext-install zip
-
-# Install Composer globally
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Set working directory
+# Set working directory inside container
 WORKDIR /var/www/html
 
-# Copy all files
-COPY . .
+# Copy all backend project files (adjust path if needed)
+COPY . /var/www/html
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Install PHP dependencies
 RUN composer install
 
-# Set environment variable to load .env manually
-ENV PHP_ENV=production
-
-# Expose port 80
-EXPOSE 80
+# Set file permissions (optional, good practice)
+RUN chown -R www-data:www-data /var/www/html
