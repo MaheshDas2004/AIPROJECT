@@ -1,10 +1,10 @@
 <?php
 
-$allowedOrigin = $_ENV['ALLOWED_ORIGIN'] ?? 'https://aiproject-o0ky.onrender.com';
-header("Access-Control-Allow-Origin: $allowedOrigin");
+header('Access-Control-Allow-Origin: https://aiproject-o0ky.onrender.com');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, Accept');
 header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -18,10 +18,6 @@ use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-
-header('Content-Type: application/json');
-
-header("Access-Control-Allow-Headers: Content-Type");
 
 $apiKey = $_ENV['GEMINI_API_KEY'];
 
