@@ -4,10 +4,13 @@ require_once "./vendor/autoload.php";
 
 use Dotenv\Dotenv;
 
-$dotenv = Dotenv::createImmutable('C:\xampp\htdocs\AIPROJECT'); // Replace with your actual path
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 header('Content-Type: application/json');
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type");
 
 $apiKey = $_ENV['GEMINI_API_KEY'];
 
