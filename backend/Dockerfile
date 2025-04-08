@@ -1,27 +1,26 @@
-FROM php:8.1-fpm
+# Use official PHP image with Apache
+FROM php:8.2-apache
 
-# Install system dependencies and PHP extensions
-RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev libzip-dev git unzip && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install gd zip pdo pdo_mysql
+# Enable mod_rewrite
+RUN a2enmod rewrite
+
+# Install curl and unzip for Composer
+RUN apt-get update && apt-get install -y curl unzip libzip-dev zip && docker-php-ext-install zip
+
+# Install Composer globally
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Copy your project files
+# Copy all files
 COPY . .
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
 # Install PHP dependencies
-RUN composer install --no-interaction --prefer-dist
+RUN composer install
 
-# Set appropriate permissions
-RUN chown -R www-data:www-data /var/www
+# Set environment variable to load .env manually
+ENV PHP_ENV=production
 
-# Expose the port your app is running on
-EXPOSE 9000
-
-# Start the PHP-FPM server
-CMD ["php-fpm"]
+# Expose port 80
+EXPOSE 80
