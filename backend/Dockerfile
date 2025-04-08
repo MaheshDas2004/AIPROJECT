@@ -1,17 +1,23 @@
-# Start with official PHP image
 FROM php:8.2-apache
 
-# Set working directory to /var/www/html
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy ONLY backend files
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    zip \
+    && docker-php-ext-install pdo pdo_mysql
+
+# Copy only backend files from host into the container
 COPY backend/ .
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Run composer install
+# Install PHP dependencies with Composer
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer install
 
-# Enable Apache rewrite mod (optional, if you're using .htaccess or routes)
+# Enable Apache rewrite mod if needed
 RUN a2enmod rewrite
