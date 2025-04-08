@@ -118,10 +118,11 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Origin': 'https://aiproject-o0ky.onrender.com'
                 },
                 body: 'message=' + encodeURIComponent(message),
-                mode: 'cors' // Remove credentials: 'include'
+                mode: 'cors'
             })
             .then(response => {
                 if (!response.ok) {

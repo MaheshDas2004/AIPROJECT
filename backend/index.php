@@ -1,10 +1,13 @@
 <?php
 
-header('Access-Control-Allow-Origin: https://aiproject-o0ky.onrender.com');
+header('Access-Control-Allow-Origin: *'); // Temporarily allow all origins
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Accept');
-header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Headers: Content-Type, Accept, Origin');
+header('Access-Control-Max-Age: 86400'); // 24 hours cache
 header('Content-Type: application/json');
+
+// Log incoming requests for debugging
+error_log('Request received from: ' . $_SERVER['HTTP_ORIGIN'] ?? 'unknown origin');
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
