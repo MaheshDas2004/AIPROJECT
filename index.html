@@ -117,9 +117,12 @@
             fetch('https://aiproject-vmgu.onrender.com', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json'
                 },
-                body: 'message=' + encodeURIComponent(message)
+                body: 'message=' + encodeURIComponent(message),
+                credentials: 'include',
+                mode: 'cors'
             })
             .then(response => response.json())
             .then(data => {
