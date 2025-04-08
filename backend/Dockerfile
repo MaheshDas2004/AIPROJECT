@@ -8,16 +8,21 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
-    && docker-php-ext-install pdo pdo_mysql
+    curl \
+    libzip-dev \
+    && docker-php-ext-install zip
 
-# Copy only backend files from host into the container
-COPY backend/ .
+# Enable Apache rewrite mod
+RUN a2enmod rewrite
+
+# Copy the entire project
+COPY . /var/www/html/
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install PHP dependencies with Composer
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer install
+# Install dependencies
+RUN cd backend && composer install --no-dev
 
-# Enable Apache rewrite mod if needed
-RUN a2enmod rewrite
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html
